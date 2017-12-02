@@ -60,7 +60,7 @@ export default class extends Phaser.State {
     this.game.add.existing(this.chuckles)
 
     this.balls = []
-    this.timeout(()=> this.spawnBall(), 5000)
+    this.timeout(()=> this.askForNewBall(), 5000)
     this.timeout(()=> this.spawnStory(plot.START), STORY_DELAY)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
@@ -82,7 +82,15 @@ export default class extends Phaser.State {
     this.balls.push(ball)
     this.game.add.existing(ball)
     this.game.physics.arcade.enable(ball)
-    this.timeout(()=> this.spawnBall(), 10000)
+    this.timeout(()=> this.askForNewBall(), 10000)
+  }
+
+  askForNewBall(){
+  	if (this.balls.length === 0){
+  		this.spawnBall()
+  	} else {
+  		this.chuckles.shootNewBall = true	
+  	}
   }
 
   spawnProblem(problem){
@@ -211,6 +219,7 @@ export default class extends Phaser.State {
   			b.body.enable = false
   			removed = true
   			this.damage(1)
+  			this.chuckles.checkNextBall()
   		}
   	})
   	if (removed) {

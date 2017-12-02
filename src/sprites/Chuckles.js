@@ -48,7 +48,8 @@ export default class extends Phaser.Sprite {
 	  		ball.body.velocity.y = -60
 	  		ball.body.velocity.x = 200
 	  	}
-  	}  	
+  	}
+  	this.checkNextBall()
   }
 
   rightHand(){
@@ -61,6 +62,14 @@ export default class extends Phaser.Sprite {
 	  		ball.body.velocity.y = -400
 	  		ball.body.velocity.x = -40
 	  	}
+  	}
+  	this.checkNextBall()
+  }
+
+  checkNextBall(){
+  	if (this.shootNewBall){
+  		this.shootNewBall = false
+  		this.context.spawnBall()
   	}
   }
 }
