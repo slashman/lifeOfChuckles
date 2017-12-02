@@ -29,23 +29,26 @@ export default class extends Phaser.State {
       context: this
     })
 
-    this.balls = [];
+    this.game.add.existing(this.chuckles)
 
-    const ball = new Ball({
+    this.balls = []
+    this.spawnBall()
+    
+    this.game.physics.startSystem(Phaser.Physics.ARCADE)
+    this.game.physics.arcade.gravity.y = 400
+  }
+
+  spawnBall(){
+  	const ball = new Ball({
       game: this.game,
-      x: this.world.centerX + 40,
-      y: this.world.centerY - 100
+      x: this.chuckles.x + 40,
+      y: this.chuckles.y - 200
     })
 
     this.balls.push(ball)
-
-    this.game.add.existing(this.chuckles)
     this.game.add.existing(ball)
-
-    this.game.physics.startSystem(Phaser.Physics.ARCADE)
-    this.game.physics.arcade.gravity.y = 400
-
-    this.game.physics.arcade.enable([ball]);
+    this.game.physics.arcade.enable(ball)
+    setTimeout(()=> this.spawnBall(), 3000)
   }
 
   getBallAt(x,y) {
