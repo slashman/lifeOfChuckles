@@ -27,6 +27,7 @@ export default class extends Phaser.State {
   	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "")
   	this.scoreText = this.createText(this.world.centerX - 150, 80, '')
   	this.hpText = this.createText(this.world.centerX + 150, 80, '')
+  	this.storyText = this.createText(this.world.centerX, this.world.centerY, '')
 
     this.cursors = this.game.input.keyboard.createCursorKeys()
     this.zKey = this.game.input.keyboard.addKey(Phaser.KeyCode.Z)
@@ -50,10 +51,13 @@ export default class extends Phaser.State {
 
     this.balls = []
     setTimeout(()=> this.spawnBall(), 5000)
+    setTimeout(()=> this.spawnStory(), 10000)
+    
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
     this.game.physics.arcade.gravity.y = 400
     this.currentProblemIndex = 0;
+    this.currentStoryIndex = 0;
     setTimeout(()=> this.spawnProblem(), 3000)
     this.hp = 30
     this.score = 0
@@ -76,7 +80,6 @@ export default class extends Phaser.State {
 
   spawnProblem(){
   	if (this.currentProblemIndex === PROBLEMS.length){
-  		this.problemTimeText.text = "You win!"
   		return;
   	}
   	const problem = PROBLEMS[this.currentProblemIndex++]
@@ -87,6 +90,15 @@ export default class extends Phaser.State {
   	this.problemTime = problem.time
   	this.selectedAnswerIcon.visible = true;
   	this.countProblemTime()
+  }
+
+  spawnStory(){
+  	if (this.currentStoryIndex === STORY.length){
+  		this.storyText.text = "The End"
+  		return;
+  	}
+  	this.storyText.text = STORY[this.currentStoryIndex++]
+    setTimeout(()=> this.spawnStory(), 10000)
   }
 
   countProblemTime() {
@@ -178,4 +190,11 @@ const PROBLEMS = [
 		correct: 0,
 		time: 10
 	},
+]
+
+const STORY = [
+	"Chuck was born one day in a happy family",
+	"Chuck grew up, started juggling things around",
+	"One day, chuck decided to do something",
+	"Then he died."
 ]
