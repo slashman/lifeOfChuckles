@@ -182,6 +182,19 @@ export default class extends Phaser.State {
   }
 
   update () {
+  	let removed = false;
+  	this.balls.forEach(b=>{
+  		if (b.y >= this.world.centerY + 60) {
+  			b.dead = true
+  			b.body.enable = false
+  			removed = true
+  			this.damage(1)
+  		}
+  	})
+  	if (removed) {
+		this.balls = this.balls.filter(b=>b.dead === false)
+	}
+    
   	const cursors = this.cursors;
 	if (cursors.left.isDown) {
 	    this.chuckles.x --;

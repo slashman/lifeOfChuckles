@@ -7,9 +7,8 @@ export default class extends Phaser.Sprite {
   constructor ({ game, x, y, age}) {
     super(game, x, y, 'ball', selectFromAge(age))
     this.anchor.setTo(0.5)
+    this.dead = false;
   }
-
-  
 }
 
 function selectFromAge(age){
