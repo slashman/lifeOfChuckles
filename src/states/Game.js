@@ -39,6 +39,9 @@ export default class extends Phaser.State {
       context: this
     })
 
+    this.cursors.up.onDown.add(()=>this.chuckles.toogleHand());
+    this.cursors.down.onDown.add(()=>this.chuckles.toogleHand());
+
     this.game.add.existing(this.chuckles)
 
     this.balls = []
@@ -57,14 +60,14 @@ export default class extends Phaser.State {
   spawnBall(){
   	const ball = new Ball({
       game: this.game,
-      x: this.chuckles.x + 40,
+      x: this.chuckles.x + 40 * (this.chuckles.leftHanded ? 1 : -1),
       y: this.chuckles.y - 200
     })
 
     this.balls.push(ball)
     this.game.add.existing(ball)
     this.game.physics.arcade.enable(ball)
-    setTimeout(()=> this.spawnBall(), 3000)
+    setTimeout(()=> this.spawnBall(), 10000)
   }
 
   spawnProblem(){
