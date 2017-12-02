@@ -45,7 +45,7 @@ export default class extends Phaser.State {
     this.game.add.existing(this.chuckles)
 
     this.balls = []
-    this.spawnBall()
+    setTimeout(()=> this.spawnBall(), 5000)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
     this.game.physics.arcade.gravity.y = 400
