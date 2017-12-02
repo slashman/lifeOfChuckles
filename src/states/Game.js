@@ -69,7 +69,8 @@ export default class extends Phaser.State {
   	const ball = new Ball({
       game: this.game,
       x: this.chuckles.x + 40 * (this.chuckles.leftHanded ? 1 : -1),
-      y: this.chuckles.y - 200
+      y: this.chuckles.y - 200,
+      age: this.chuckles.age
     })
 
     this.balls.push(ball)
@@ -114,7 +115,6 @@ export default class extends Phaser.State {
   resolveProblem() {
   	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
   	if (selectedAnswer === this.currentProblem.correct){
-  		// Score, relax, go forward
   		this.score++;
   		this.scoreText.text = `Score: ${this.score}`
   		this.problemTimeText.text = "Correct!"
@@ -124,6 +124,7 @@ export default class extends Phaser.State {
   		if (this.dead)
   			return;
   	}
+  	this.chuckles.age++;
   	this.selectedAnswerIcon.visible = false;
   	setTimeout(()=> this.clearProblem(), 2000)
   	setTimeout(()=> this.spawnProblem(), 5000) // TODO: Problems come quicker everytime

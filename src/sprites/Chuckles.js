@@ -14,6 +14,7 @@ export default class extends Phaser.Sprite {
     this.rightThrower.anchor.setTo(0.5)
     this.addChild(this.leftThrower)
     this.addChild(this.rightThrower)
+    this.age = 0
   }
 
   toogleHand () {
