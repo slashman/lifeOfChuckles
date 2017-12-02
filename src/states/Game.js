@@ -2,7 +2,9 @@
 import Phaser from 'phaser'
 import Chuckles from '../sprites/Chuckles'
 import Ball from '../sprites/Ball'
-import {dist} from '../utils'
+import {dist, getRandomInt} from '../utils'
+
+const STORY_DELAY = 10000
 
 export default class extends Phaser.State {
   init () {}
@@ -27,11 +29,14 @@ export default class extends Phaser.State {
   	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "")
   	this.scoreText = this.createText(this.world.centerX - 150, 80, '')
   	this.hpText = this.createText(this.world.centerX + 150, 80, '')
-  	this.storyText = this.createText(this.world.centerX, this.world.centerY, '')
+  	this.storyText = this.createText(this.world.centerX, this.world.centerY + 60, '')
 
     this.cursors = this.game.input.keyboard.createCursorKeys()
     this.zKey = this.game.input.keyboard.addKey(Phaser.KeyCode.Z)
     this.xKey = this.game.input.keyboard.addKey(Phaser.KeyCode.X)
+
+	this.personsGroup = this.game.add.group()
+    this.chucklesGroup = this.game.add.group()
 
     this.chuckles = new Chuckles({
       game: this.game,
@@ -39,6 +44,8 @@ export default class extends Phaser.State {
       y: this.world.centerY,
       context: this
     })
+    this.addPerson(1, this.world.centerX - 120)
+    this.addPerson(0, this.world.centerX + 120)
 
     this.selectedAnswerIcon = this.game.add.sprite(this.world.centerX, this.game.height - 50, 'arrows', 4)
     this.selectedAnswerIcon.anchor.setTo(0.5)
@@ -51,8 +58,7 @@ export default class extends Phaser.State {
 
     this.balls = []
     setTimeout(()=> this.spawnBall(), 5000)
-    setTimeout(()=> this.spawnStory(), 10000)
-    
+    setTimeout(()=> this.spawnStory(), STORY_DELAY)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
     this.game.physics.arcade.gravity.y = 400
@@ -98,8 +104,12 @@ export default class extends Phaser.State {
   		this.storyText.text = "The End"
   		return;
   	}
-  	this.storyText.text = STORY[this.currentStoryIndex++]
-    setTimeout(()=> this.spawnStory(), 10000)
+  	const story = STORY[this.currentStoryIndex++];
+  	this.storyText.text = story.text;
+  	if (story.fn){
+  		story.fn(this)
+  	}
+    setTimeout(()=> this.spawnStory(), STORY_DELAY)
   }
 
   countProblemTime() {
@@ -124,7 +134,7 @@ export default class extends Phaser.State {
   		if (this.dead)
   			return;
   	}
-  	this.chuckles.age++;
+  	this.chuckles.increaseAge();
   	this.selectedAnswerIcon.visible = false;
   	setTimeout(()=> this.clearProblem(), 2000)
   	setTimeout(()=> this.spawnProblem(), 5000) // TODO: Problems come quicker everytime
@@ -149,6 +159,14 @@ export default class extends Phaser.State {
   	if (this.hp <= 0){
   		this.dead = true;
   	}
+  }
+
+  addPerson(index, x){
+  	if (!x){
+  		x = getRandomInt(60, this.game.width - 60)
+  	}
+  	const person = this.game.add.sprite(x, this.chuckles.y - 20, 'people', index, this.personsGroup)
+  	person.anchor.setTo(0.5)
   }
 
   update () {
@@ -191,11 +209,31 @@ const PROBLEMS = [
 		correct: 0,
 		time: 10
 	},
+	{
+		text: "What is love",
+		answers: ["Dunno", "Uh?"],
+		correct: 0,
+		time: 10
+	},
 ]
 
 const STORY = [
-	"Chuck was born one day in a happy family",
-	"Chuck grew up, started juggling things around",
-	"One day, chuck decided to do something",
-	"Then he died."
+	{
+		text: "Chuck was born one day in a happy family"
+	},
+	{
+		text: "Chuck grew up, started juggling things around"
+	},
+	{
+		text: "Chuck met a friend, Paul. He gave him a nickname: Chuckles",
+		fn: (context) => {
+			context.addPerson(2)
+		}
+	},
+	{
+		text: "One day, chuck decided to do something"
+	},
+	{
+		text: "Then he died."
+	}
 ]

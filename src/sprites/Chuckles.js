@@ -17,6 +17,16 @@ export default class extends Phaser.Sprite {
     this.age = 0
   }
 
+  increaseAge () {
+  	this.age ++;
+  	let range = AGE_RANGES[this.age]
+  	if (!range) {
+  		range = AGE_RANGES[AGE_RANGES.length - 1]
+  	}
+  	this.animations.add('dance', [0+range.app*2, 1+range.app*2], 3, true)
+	this.animations.play('dance')
+  }
+
   toogleHand () {
   	this.leftHanded = !this.leftHanded;
     if (this.leftHanded){
@@ -54,3 +64,11 @@ export default class extends Phaser.Sprite {
   	}
   }
 }
+
+
+const AGE_RANGES = [
+	{ app: 0 },
+	{ app: 1 },
+	{ app: 2 },
+	{ app: 3 }
+]
