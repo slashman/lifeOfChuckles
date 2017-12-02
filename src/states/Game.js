@@ -11,26 +11,26 @@ export default class extends Phaser.State {
   init () {}
   preload () {}
 
-  createText (x, y, initialText){
+  createText (x, y, initialText, size){
   	const text = this.add.text(x, y, initialText)
-    text.font = 'Bangers'
+    text.font = 'Oswald'
     text.padding.set(10, 16)
-    text.fontSize = 40
-    text.fill = '#77BFA3'
+    text.fontSize = size
+    text.fill = '#000000'
     text.smoothed = false
     text.anchor.setTo(0.5)
     return text
   }
 
   create () {
-    const banner = this.createText(this.world.centerX, 40, 'Life of Chuckles')
-	this.problemText = this.createText(this.world.centerX, 100, "")
-  	this.problemOptionA = this.createText(this.world.centerX - 100, this.game.height - 80, "")
-  	this.problemOptionB = this.createText(this.world.centerX + 100, this.game.height - 80, "")
-  	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "")
-  	this.scoreText = this.createText(this.world.centerX - 150, 80, '')
-  	this.hpText = this.createText(this.world.centerX + 150, 80, '')
-  	this.storyText = this.createText(this.world.centerX, this.world.centerY + 60, '')
+    const banner = this.createText(this.world.centerX, 40, 'Life of Chuckles', 40)
+	this.problemText = this.createText(this.world.centerX, this.world.centerY + 120, "", 30)
+  	this.problemOptionA = this.createText(this.world.centerX - 100, this.game.height - 80, "", 30)
+  	this.problemOptionB = this.createText(this.world.centerX + 100, this.game.height - 80, "", 30)
+  	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "", 40)
+  	this.scoreText = this.createText(this.world.centerX - 250, 30, '', 20)
+  	this.hpText = this.createText(this.world.centerX + 250, 30, '', 20)
+  	this.storyText = this.createText(this.world.centerX,  90, '', 20)
 
     this.cursors = this.game.input.keyboard.createCursorKeys()
     this.zKey = this.game.input.keyboard.addKey(Phaser.KeyCode.Z)
@@ -184,13 +184,13 @@ export default class extends Phaser.State {
   update () {
   	const cursors = this.cursors;
 	if (cursors.left.isDown) {
-	    this.chuckles.leftHand()
-	} else if (cursors.right.isDown) {
-	    this.chuckles.rightHand()
-	} else if (this.zKey.isDown) {
 	    this.chuckles.x --;
-	} else if (this.xKey.isDown) {
+	} else if (cursors.right.isDown) {
 	    this.chuckles.x ++;
+	} else if (this.zKey.isDown) {
+		this.chuckles.leftHand()	    
+	} else if (this.xKey.isDown) {
+	    this.chuckles.rightHand()
 	}
 	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
   	if (selectedAnswer === 0) {

@@ -3,7 +3,7 @@ import WebFont from 'webfontloader'
 
 export default class extends Phaser.State {
   init () {
-    this.stage.backgroundColor = '#EDEEC9'
+    this.stage.backgroundColor = '#DDD'
     this.fontsReady = false
     this.fontsLoaded = this.fontsLoaded.bind(this)
   }
@@ -11,7 +11,7 @@ export default class extends Phaser.State {
   preload () {
     WebFont.load({
       google: {
-        families: ['Bangers']
+        families: ['Oswald']
       },
       active: this.fontsLoaded
     })
