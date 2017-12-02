@@ -21,12 +21,12 @@ export default class extends Phaser.State {
 
   create () {
     const banner = this.createText(this.world.centerX, 40, 'Life of Chuckles')
-	this.problemText = this.createText(this.world.centerX, 80, "")
+	this.problemText = this.createText(this.world.centerX, 100, "")
   	this.problemOptionA = this.createText(this.world.centerX - 100, this.game.height - 80, "")
   	this.problemOptionB = this.createText(this.world.centerX + 100, this.game.height - 80, "")
-  	this.problemTimeText = this.createText(this.world.centerX, 120, "")
-  	this.scoreText = this.createText(this.world.centerX - 100, this.game.height - 40, '')
-  	this.hpText = this.createText(this.world.centerX + 100, this.game.height - 40, '')
+  	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "")
+  	this.scoreText = this.createText(this.world.centerX - 150, 80, '')
+  	this.hpText = this.createText(this.world.centerX + 150, 80, '')
 
     this.cursors = this.game.input.keyboard.createCursorKeys()
     this.zKey = this.game.input.keyboard.addKey(Phaser.KeyCode.Z)
@@ -38,6 +38,10 @@ export default class extends Phaser.State {
       y: this.world.centerY,
       context: this
     })
+
+    this.selectedAnswerIcon = this.game.add.sprite(this.world.centerX, this.game.height - 50, 'arrows', 4)
+    this.selectedAnswerIcon.anchor.setTo(0.5)
+    this.selectedAnswerIcon.visible = false;
 
     this.cursors.up.onDown.add(()=>this.chuckles.toogleHand());
     this.cursors.down.onDown.add(()=>this.chuckles.toogleHand());
@@ -81,6 +85,7 @@ export default class extends Phaser.State {
   	this.problemOptionA.text = problem.answers[0]
   	this.problemOptionB.text = problem.answers[1]
   	this.problemTime = problem.time
+  	this.selectedAnswerIcon.visible = true;
   	this.countProblemTime()
   }
 
@@ -107,6 +112,7 @@ export default class extends Phaser.State {
   		if (this.dead)
   			return;
   	}
+  	this.selectedAnswerIcon.visible = false;
   	setTimeout(()=> this.clearProblem(), 2000)
   	setTimeout(()=> this.spawnProblem(), 5000) // TODO: Problems come quicker everytime
   }
@@ -142,6 +148,12 @@ export default class extends Phaser.State {
 	    this.chuckles.x --;
 	} else if (this.xKey.isDown) {
 	    this.chuckles.x ++;
+	}
+	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
+  	if (selectedAnswer === 0) {
+		this.selectedAnswerIcon.x = this.world.centerX - 100;
+	} else {
+		this.selectedAnswerIcon.x = this.world.centerX + 100;
 	}
   }
 
