@@ -58,8 +58,8 @@ export default class extends Phaser.State {
     this.game.add.existing(this.chuckles)
 
     this.balls = []
-    setTimeout(()=> this.spawnBall(), 5000)
-    setTimeout(()=> this.spawnStory(plot.START), STORY_DELAY)
+    this.timeout(()=> this.spawnBall(), 5000)
+    this.timeout(()=> this.spawnStory(plot.START), STORY_DELAY)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
     this.game.physics.arcade.gravity.y = 400
@@ -80,7 +80,7 @@ export default class extends Phaser.State {
     this.balls.push(ball)
     this.game.add.existing(ball)
     this.game.physics.arcade.enable(ball)
-    setTimeout(()=> this.spawnBall(), 10000)
+    this.timeout(()=> this.spawnBall(), 10000)
   }
 
   spawnProblem(problem){
@@ -115,7 +115,7 @@ export default class extends Phaser.State {
   	} else if (story.choice) {
   		this.spawnChoice(story.choice)
   	} else if (story.next){
-		setTimeout(()=> this.spawnStory(plot[story.next]), STORY_DELAY)
+		this.timeout(()=> this.spawnStory(plot[story.next]), STORY_DELAY)
     }
   }
 
@@ -126,14 +126,14 @@ export default class extends Phaser.State {
   	}
   	this.problemTimeText.text = this.problemTime
   	this.problemTime--;
-  	setTimeout(()=> this.countProblemTime(), 1000)
+  	this.timeout(()=> this.countProblemTime(), 1000)
   }
 
   resolveProblem() {
   	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
   	if (this.currentProblem.isChoice){
   		this.problemTimeText.text = "Ok..."
-  		setTimeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
+  		this.timeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
 	} else {
 		if (selectedAnswer === this.currentProblem.correct){
 	  		this.score++;
@@ -146,10 +146,10 @@ export default class extends Phaser.State {
 	  			return;
 	  	}
 	  	this.chuckles.increaseAge();
-	  	setTimeout(()=> this.spawnStory(plot[this.currentProblem.next]), 4000)
+	  	this.timeout(()=> this.spawnStory(plot[this.currentProblem.next]), 4000)
 	}
   	this.selectedAnswerIcon.visible = false;
-  	setTimeout(()=> this.clearProblem(), 2000)
+  	this.timeout(()=> this.clearProblem(), 2000)
   }
 
   clearProblem() {
@@ -200,7 +200,9 @@ export default class extends Phaser.State {
 	}
   }
 
-
+	timeout(fn, time) {
+		this.game.time.events.add(time, fn);
+	}
 
   render () {
     if (__DEV__) {
