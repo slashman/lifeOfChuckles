@@ -3,6 +3,7 @@ import Phaser from 'phaser'
 import Chuckles from '../sprites/Chuckles'
 import Ball from '../sprites/Ball'
 import {dist, getRandomInt} from '../utils'
+import plot from '../plot'
 
 const STORY_DELAY = 10000
 
@@ -58,13 +59,10 @@ export default class extends Phaser.State {
 
     this.balls = []
     setTimeout(()=> this.spawnBall(), 5000)
-    setTimeout(()=> this.spawnStory(), STORY_DELAY)
+    setTimeout(()=> this.spawnStory(plot.START), STORY_DELAY)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
     this.game.physics.arcade.gravity.y = 400
-    this.currentProblemIndex = 0;
-    this.currentStoryIndex = 0;
-    setTimeout(()=> this.spawnProblem(), 3000)
     this.hp = 30
     this.score = 0
     this.hpText.text = `HP: ${this.hp}`
@@ -85,11 +83,7 @@ export default class extends Phaser.State {
     setTimeout(()=> this.spawnBall(), 10000)
   }
 
-  spawnProblem(){
-  	if (this.currentProblemIndex === PROBLEMS.length){
-  		return;
-  	}
-  	const problem = PROBLEMS[this.currentProblemIndex++]
+  spawnProblem(problem){
   	this.currentProblem = problem;
   	this.problemText.text = problem.text
   	this.problemOptionA.text = problem.answers[0]
@@ -99,17 +93,30 @@ export default class extends Phaser.State {
   	this.countProblemTime()
   }
 
-  spawnStory(){
-  	if (this.currentStoryIndex === STORY.length){
-  		this.storyText.text = "The End"
-  		return;
-  	}
-  	const story = STORY[this.currentStoryIndex++];
+  spawnChoice(choice){
+  	this.currentProblem = choice
+  	this.currentProblem.isChoice = true
+  	this.problemText.text = choice.text
+  	this.problemOptionA.text = choice.choices[0]
+  	this.problemOptionB.text = choice.choices[1]
+  	this.problemTime = 5
+  	this.selectedAnswerIcon.visible = true;
+  	this.countProblemTime()
+  }
+
+  spawnStory(story){
   	this.storyText.text = story.text;
   	if (story.fn){
   		story.fn(this)
   	}
-    setTimeout(()=> this.spawnStory(), STORY_DELAY)
+  	if (story.problem){
+  		this.spawnProblem(story.problem)
+  		this.currentProblem.next = story.next
+  	} else if (story.choice) {
+  		this.spawnChoice(story.choice)
+  	} else if (story.next){
+		setTimeout(()=> this.spawnStory(plot[story.next]), STORY_DELAY)
+    }
   }
 
   countProblemTime() {
@@ -124,20 +131,25 @@ export default class extends Phaser.State {
 
   resolveProblem() {
   	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
-  	if (selectedAnswer === this.currentProblem.correct){
-  		this.score++;
-  		this.scoreText.text = `Score: ${this.score}`
-  		this.problemTimeText.text = "Correct!"
-  	} else {
-  		this.problemTimeText.text = "Wrong!"
-  		this.damage(10)
-  		if (this.dead)
-  			return;
-  	}
-  	this.chuckles.increaseAge();
+  	if (this.currentProblem.isChoice){
+  		this.problemTimeText.text = "Ok..."
+  		setTimeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
+	} else {
+		if (selectedAnswer === this.currentProblem.correct){
+	  		this.score++;
+	  		this.scoreText.text = `Score: ${this.score}`
+	  		this.problemTimeText.text = "Correct!"
+	  	} else {
+	  		this.problemTimeText.text = "Wrong!"
+	  		this.damage(10)
+	  		if (this.dead)
+	  			return;
+	  	}
+	  	this.chuckles.increaseAge();
+	  	setTimeout(()=> this.spawnStory(plot[this.currentProblem.next]), 4000)
+	}
   	this.selectedAnswerIcon.visible = false;
   	setTimeout(()=> this.clearProblem(), 2000)
-  	setTimeout(()=> this.spawnProblem(), 5000) // TODO: Problems come quicker everytime
   }
 
   clearProblem() {
@@ -195,45 +207,3 @@ export default class extends Phaser.State {
     }
   }
 }
-
-const PROBLEMS = [
-	{
-		text: "2 + 2",
-		answers: [4, 1],
-		correct: 0,
-		time: 10
-	},
-	{
-		text: "7 * 6",
-		answers: [42, 46],
-		correct: 0,
-		time: 10
-	},
-	{
-		text: "What is love",
-		answers: ["Dunno", "Uh?"],
-		correct: 0,
-		time: 10
-	},
-]
-
-const STORY = [
-	{
-		text: "Chuck was born one day in a happy family"
-	},
-	{
-		text: "Chuck grew up, started juggling things around"
-	},
-	{
-		text: "Chuck met a friend, Paul. He gave him a nickname: Chuckles",
-		fn: (context) => {
-			context.addPerson(2)
-		}
-	},
-	{
-		text: "One day, chuck decided to do something"
-	},
-	{
-		text: "Then he died."
-	}
-]
