@@ -45,6 +45,8 @@ export default class extends Phaser.State {
       y: this.world.centerY,
       context: this
     })
+    this.persons = []
+    
     this.addPerson(1, this.world.centerX - 120)
     this.addPerson(0, this.world.centerX + 120)
 
@@ -175,10 +177,30 @@ export default class extends Phaser.State {
 
   addPerson(index, x){
   	if (!x){
-  		x = getRandomInt(60, this.game.width - 60)
+  		if (this.persons.length == 0){
+  			x = getRandomInt(60, this.game.width - 60)
+  		} else {
+  			let safe = 1000
+	  		retry: while (true){
+	  			x = getRandomInt(60, this.game.width - 60)
+	  			for (let i = 0; i < this.persons.length; i++){
+	  				const p = this.persons[i];
+	  				const dist = Math.abs(x - p.x);
+	  				if (dist < 40){
+	  					if (--safe > 0){
+	  						continue retry;
+	  					} else {
+	  						break;
+	  					}
+	  				}
+	  			}
+	  			break;
+	  		}	
+  		}
   	}
   	const person = this.game.add.sprite(x, this.chuckles.y - 20, 'people', index, this.personsGroup)
   	person.anchor.setTo(0.5)
+  	this.persons.push(person)
   }
 
   update () {
