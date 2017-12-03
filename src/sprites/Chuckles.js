@@ -49,7 +49,7 @@ export default class extends Phaser.Sprite {
 
   leftHand(){
 	const ball = this.context.getBallAt(this.x - 30, this.y - 20)
-  	if (ball) {
+  	if (ball && ball.body) {
   		if (this.leftHanded) {
 	  		ball.body.velocity.y = -200
 	  		ball.body.velocity.x = 40
@@ -59,6 +59,11 @@ export default class extends Phaser.Sprite {
 	  	}
 	  	if (!ball.touched){
 	  		ball.touched = true;
+	  		if (++ball.touchTimes > 20){
+	  			ball.dead = true
+	  			this.context.balls = this.context.balls.filter(b=>b.dead === false)
+	  			ball.destroy()
+	  		}
 	  		setTimeout(()=>ball.touched = false, 1000)
 	  		this.context.scoreBall()
 	  	}
@@ -68,7 +73,7 @@ export default class extends Phaser.Sprite {
 
   rightHand(){
   	const ball = this.context.getBallAt(this.x + 30, this.y - 20)
-  	if (ball) {
+  	if (ball && ball.body) {
   		if (this.leftHanded) {
 	  		ball.body.velocity.y = -60
 	  		ball.body.velocity.x = -100
@@ -78,6 +83,11 @@ export default class extends Phaser.Sprite {
 	  	}
 	  	if (!ball.touched){
 	  		ball.touched = true;
+	  		if (++ball.touchTimes > 20){
+	  			ball.dead = true
+	  			this.context.balls = this.context.balls.filter(b=>b.dead === false)
+	  			ball.destroy()
+	  		}
 	  		setTimeout(()=>ball.touched = false, 1000)
 	  		this.context.scoreBall()
 	  	}

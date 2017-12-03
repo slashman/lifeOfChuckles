@@ -8,6 +8,7 @@ export default class extends Phaser.Sprite {
     super(game, x, y, 'ball', selectFromAge(age))
     this.anchor.setTo(0.5)
     this.dead = false;
+    this.touchTimes = 0
   }
 }
 
