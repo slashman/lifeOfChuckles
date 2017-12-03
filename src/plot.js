@@ -4,15 +4,15 @@ export default {
 		fn: (context) => {
 			context.addPerson(1, context.world.centerX - 120)
 		    context.addPerson(0, context.world.centerX + 120)
-		},
-		next: 'AGE5'
+		    return 'AGE5'
+		}
 	},
 	AGE5: {
 		text: "When he was five years old, their parents took him to a preschool",
 		fn: (context) => {
 			context.setStressLevel(1)
-		},
-		next: 'CHOICE'
+			return 'CHOICE'
+		}
 	},
 	CHOICE: {
 		text: "Chuck is at the playground",
@@ -50,9 +50,6 @@ export default {
 	},
 	KINDER: {
 		text: "Chuck is now at Kindergarten",
-		fn: (context) => {
-			context.chuckles.setAge(1)
-		},
 		choice: {
 			text: "Favorite Class",
 			choices: ["Colors", "Alphabet"],
@@ -77,7 +74,7 @@ export default {
 		problem: {
 			text: "Draw the vowels",
 			answers: ["ɐɤɘɑI", "aeiou"],
-			correct: 0,
+			correct: 1,
 			onCorrect: (context) => {
 				context.chuckles.increaseInt(1)
 			},
@@ -88,9 +85,10 @@ export default {
 	FRIEND: {
 		text: "Chuck met a friend, Paul. He gave him a nickname: Chuckles",
 		fn: (context) => {
+			context.chuckles.setAge(1)
 			context.addPerson(2)
-		},
-		next: 'HELP_FRIEND'
+			return 'HELP_FRIEND'
+		}
 	},
 	HELP_FRIEND: {
 		text: "Paul is being harrased by some schoolmates",
@@ -100,10 +98,123 @@ export default {
 			onA: (context) => {
 				context.chuckles.increaseSoc(1)
 			},
-			nexts: ["DEATH","DEATH"],
+			nexts: ["ELEM","ELEM"],
 			time: 10
 		}
 	},
+	ELEM: {
+		text: "Chuck is now at Elementary School",
+		next: 'FATHERDIED'
+	},
+	FATHERDIED: {
+		text: "Chuck's father passed out last summer.",
+		fn: (context) => {
+			context.removePerson(0)
+			context.setStressLevel(2)
+			return 'ELEM_SUB'
+		}
+	},
+	ELEM_SUB: {
+		text: "Chuck must focus in a subject",
+		choice: {
+			text: "Favorite Class",
+			choices: ["Math", "Sport"],
+			nexts: ["MATH2", "SPORT2"]
+		}
+	},
+	MATH2: {
+		text: "Chuck is at Math Class",
+		problem: {
+			text: "Square Root of 81?",
+			answers: ["8", "9"],
+			correct: 1,
+			onCorrect: (context) => {
+				context.chuckles.increaseInt(1)
+			},
+			time: 10
+		},
+		next: 'JUNIOR_HIGH'
+	},
+	SPORT2: {
+		text: "Chuck is on the soccer team",
+		problem: {
+			text: "He kicks the ball...",
+			answers: ["Miss", "Goal!"],
+			correct: 1,
+			onCorrect: (context) => {
+				context.chuckles.increaseDex(1)
+			},
+			time: 10
+		},
+		next: 'JUNIOR_HIGH'
+	},
+	JUNIOR_HIGH: {
+		text: "Chuck is now at Junior High",
+		next: 'GAB1'
+	},
+	GAB1: {
+		text: "Chuck sees a girl and falls in love",
+		fn: (context) => {
+			context.addPerson(3)
+			if (context.chuckles.soc > 0){
+				return 'GAB2'
+			} else {
+				return 'NOGAB'
+			}
+		}
+	},
+	GAB2: {
+		text: "He fills up with courage and gives her a flower",
+		fn: (context) => {
+			context.chuckles.increaseSoc(1)
+			context.chuckles.gab = true
+			return 'HIGH_SCHOOL'
+		}
+	},
+	NOGAB: {
+		text: "But he's too coward to talk with her",
+		fn: (context) => {
+			context.chuckles.increaseSoc(1)
+			context.chuckles.gab = false
+			context.removePerson(3)
+			return 'HIGH_SCHOOL'
+		}
+	},
+	HIGH_SCHOOL: {
+		text: "Chuck is now at High School",
+		choice: {
+			text: "The exams are close",
+			choices: ["Hang out", "Study"],
+			onA: (context) => {
+				context.chuckles.increaseSoc(2)
+			},
+			onB: (context) => {
+				context.chuckles.increaseInt(2)
+			},
+			nexts: ["EXAMS","EXAMS"],
+			time: 10
+		}
+	},
+	EXAMS: {
+		text: "Chuckles does his High School Exams",
+		fn: (context) => {
+			if (context.chuckles.int >= 3){
+				return 'WON_EXAMS'
+			} else {
+				return 'LOST_EXAMS'
+			}
+		}
+	},
+	WON_EXAMS: {
+		text: "He passes the exams",
+		fn: (context) => {
+			context.chuckles.increaseInt()
+		}
+	},
+	LOST_EXAMS: {
+		text: "He failed the exams"
+	},
+
 	DEATH: {
 		text: "Then he died."
 	}

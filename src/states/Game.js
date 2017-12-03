@@ -5,7 +5,7 @@ import Ball from '../sprites/Ball'
 import {dist, getRandomInt} from '../utils'
 import plot from '../plot'
 
-const STORY_DELAY = 5000
+const STORY_DELAY = 4000
 const EASY_MODE = true
 
 export default class extends Phaser.State {
@@ -138,16 +138,17 @@ export default class extends Phaser.State {
 
   spawnStory(story){
   	this.storyText.text = story.text;
+  	let next = story.next
   	if (story.fn){
-  		story.fn(this)
+  		next = story.fn(this)
   	}
   	if (story.problem){
   		this.spawnProblem(story.problem)
   		this.currentProblem.next = story.next
   	} else if (story.choice) {
   		this.spawnChoice(story.choice)
-  	} else if (story.next){
-		this.timeout(()=> this.spawnStory(plot[story.next]), STORY_DELAY)
+  	} else if (next){
+		this.timeout(()=> this.spawnStory(plot[next]), STORY_DELAY)
     }
   }
 
@@ -219,6 +220,12 @@ export default class extends Phaser.State {
   	}
   }
 
+  removePerson(index){
+  	const toRemove = this.persons.find(p=>p.personIndex === index)
+  	this.persons = this.persons.filter(p=>p.personIndex !== index)
+  	toRemove && toRemove.destroy()
+  }
+
   addPerson(index, x){
   	if (!x){
   		if (this.persons.length == 0){
@@ -244,6 +251,7 @@ export default class extends Phaser.State {
   	}
   	const person = this.game.add.sprite(x, this.chuckles.y - 20, 'people', index, this.personsGroup)
   	person.anchor.setTo(0.5)
+  	person.personIndex = index;
   	this.persons.push(person)
   }
 
