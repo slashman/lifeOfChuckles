@@ -30,13 +30,13 @@ export default class extends Phaser.State {
   	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "", 40)
   	this.scoreText = this.createText(this.world.centerX - 250, 30, '', 20)
   	
-  	this.intText = this.createText(this.world.centerX - 250, 60, '', 20)
-  	this.dexText = this.createText(this.world.centerX - 250, 90, '', 20)
+  	this.intText = this.createText(this.world.centerX - 250, 150, '', 20)
+  	this.dexText = this.createText(this.world.centerX - 250, 180, '', 20)
   	
   	this.hpText = this.createText(this.world.centerX + 250, 30, '', 20)
 
-  	this.socText = this.createText(this.world.centerX + 250, 60, '', 20)
-  	this.artText = this.createText(this.world.centerX + 250, 90, '', 20)
+  	this.socText = this.createText(this.world.centerX + 250, 150, '', 20)
+  	this.artText = this.createText(this.world.centerX + 250, 180, '', 20)
 
   	this.storyText = this.createText(this.world.centerX,  90, '', 20)
 
@@ -163,13 +163,19 @@ export default class extends Phaser.State {
   resolveProblem() {
   	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
   	if (this.currentProblem.isChoice){
-  		this.problemTimeText.text = "Ok..."
-  		if (selectedAnswer === 0 && this.currentProblem.onA){
-  			this.currentProblem.onA(this)
+  		if (selectedAnswer === 0) {
+  			if (this.currentProblem.onA){
+  				this.currentProblem.onA(this)
+  			}
+  			this.problemTimeText.text = this.currentProblem.choices[0]
+  		} else if (selectedAnswer === 1) {
+  			if (this.currentProblem.onB){
+  				this.currentProblem.onB(this)
+  			}
+  			this.problemTimeText.text = this.currentProblem.choices[1]
   		}
-  		if (selectedAnswer === 1 && this.currentProblem.onB){
-  			this.currentProblem.onB(this)
-  		}
+  		this.problemOptionA.text = ""
+  		this.problemOptionB.text = ""
   		this.timeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
 	} else {
 		if (selectedAnswer === this.currentProblem.correct){
