@@ -45,3 +45,5 @@ Big thanks to these great repos:
 https://github.com/belohlavek/phaser-es6-boilerplate
 
 https://github.com/cstuncsik/phaser-es6-demo
+
+Uses JSFXR for sound: https://github.com/mneubrand/jsfxr/

@@ -111,6 +111,7 @@ export default class extends Phaser.State {
   scoreBall(){
   	this.score += this.balls.length;
   	this.scoreText.text = `Score: ${this.score}`
+  	this.scoreSound()
   }
 
   askForNewBall(){
@@ -139,6 +140,7 @@ export default class extends Phaser.State {
 
   spawnChoice(choice){
   	if (this.dead) return;
+
   	this.currentProblem = choice
   	this.currentProblem.isChoice = true
   	this.problemText.text = choice.text
@@ -151,6 +153,7 @@ export default class extends Phaser.State {
 
   spawnStory(story){
   	if (this.dead) return;
+  	this.eventSound();
   	this.storyText.text = story.text;
   	let next = story.next
   	if (story.fn){
@@ -198,6 +201,7 @@ export default class extends Phaser.State {
 	} else {
 		if (selectedAnswer === this.currentProblem.correct){
 	  		this.score += 20;
+	  		this.scoreSound()
 	  		this.scoreText.text = `Score: ${this.score}`
 	  		this.problemTimeText.text = "Good!"
 	  		if (this.currentProblem.onCorrect){
@@ -229,6 +233,7 @@ export default class extends Phaser.State {
   }
 
   damage(damage){
+  	this.explosionSound()
   	this.chuckles.hp -= damage
   	this.updateStats()
   	if (this.chuckles.hp <= 0){
@@ -320,4 +325,23 @@ export default class extends Phaser.State {
     if (__DEV__) {
     }
   }
+
+  explosionSound() {
+  	this.doSound([3,,0.2458,0.2613,0.3727,0.1637,,-0.2891,,,,-0.7479,0.8218,,,,0.2222,-0.0107,1,,,,,0.5])
+  }
+
+  scoreSound() {
+  	 this.doSound([0,,0.1004,,0.2588,0.3634,,0.2999,,,,,,0.5796,,0.4403,,,1,,,,,0.5])
+  }
+
+  eventSound() {
+  	this.doSound([0,0.023,0.0646,0.0149,0.6111,0.2414,,-0.3153,-0.0119,-0.9614,0.3539,-0.6659,-0.0534,0.1527,0.0018,0.4871,0.0879,-0.0111,0.6889,-0.0805,0.2089,0.162,-0.2478,0.5])
+  }
+
+ doSound (values){
+ 	var soundURL = jsfxr(values); 
+	 var player = new Audio();
+	 player.src = soundURL;
+	 player.play();
+ }
 }
