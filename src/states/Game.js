@@ -7,6 +7,7 @@ import plot from '../plot'
 
 const STORY_DELAY = 4000
 const EASY_MODE = true
+const BALL_DELAY = 3000
 
 export default class extends Phaser.State {
   init () {}
@@ -69,7 +70,7 @@ export default class extends Phaser.State {
 
     this.balls = []
     this.stressLevel = 0;
-    this.timeout(()=> this.askForNewBall(), 5000)
+    this.timeout(()=> this.askForNewBall(), BALL_DELAY)
     this.timeout(()=> this.spawnStory(plot.START), STORY_DELAY)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
@@ -89,10 +90,11 @@ export default class extends Phaser.State {
   }
 
   setStressLevel(l) {
-  	this.stressLevel = l
+  	this.stressLevel = l+1
   }
 
   spawnBall(){
+  	if (this.dead) return;
   	const ball = new Ball({
       game: this.game,
       x: this.chuckles.x + 40 * (this.chuckles.leftHanded ? 1 : -1),
@@ -103,12 +105,18 @@ export default class extends Phaser.State {
     this.balls.push(ball)
     this.game.add.existing(ball)
     this.game.physics.arcade.enable(ball)
-    this.timeout(()=> this.askForNewBall(), 5000)
+    this.timeout(()=> this.askForNewBall(), BALL_DELAY)
+  }
+
+  scoreBall(){
+  	this.score += this.balls.length;
+  	this.scoreText.text = `Score: ${this.score}`
   }
 
   askForNewBall(){
+  	if (this.dead) return;
   	if (this.balls.length >= this.stressLevel){
-  		this.timeout(()=> this.askForNewBall(), 5000)
+  		this.timeout(()=> this.askForNewBall(), BALL_DELAY)
   		return;
   	}
   	if (this.balls.length === 0){
@@ -119,6 +127,7 @@ export default class extends Phaser.State {
   }
 
   spawnProblem(problem){
+  	if (this.dead) return;
   	this.currentProblem = problem;
   	this.problemText.text = problem.text
   	this.problemOptionA.text = problem.answers[0]
@@ -129,6 +138,7 @@ export default class extends Phaser.State {
   }
 
   spawnChoice(choice){
+  	if (this.dead) return;
   	this.currentProblem = choice
   	this.currentProblem.isChoice = true
   	this.problemText.text = choice.text
@@ -140,6 +150,7 @@ export default class extends Phaser.State {
   }
 
   spawnStory(story){
+  	if (this.dead) return;
   	this.storyText.text = story.text;
   	let next = story.next
   	if (story.fn){
@@ -156,6 +167,7 @@ export default class extends Phaser.State {
   }
 
   countProblemTime() {
+  	if (this.dead) return;
   	if (this.problemTime === 0){
   		this.resolveProblem();
   		return;
@@ -166,6 +178,7 @@ export default class extends Phaser.State {
   }
 
   resolveProblem() {
+  	if (this.dead) return;
   	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
   	if (this.currentProblem.isChoice){
   		if (selectedAnswer === 0) {
@@ -184,7 +197,7 @@ export default class extends Phaser.State {
   		this.timeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
 	} else {
 		if (selectedAnswer === this.currentProblem.correct){
-	  		this.score++;
+	  		this.score += 20;
 	  		this.scoreText.text = `Score: ${this.score}`
 	  		this.problemTimeText.text = "Good!"
 	  		if (this.currentProblem.onCorrect){
@@ -220,6 +233,7 @@ export default class extends Phaser.State {
   	this.updateStats()
   	if (this.chuckles.hp <= 0){
   		this.dead = true;
+  		this.problemText.text = "You failed at living."
   	}
   }
 
@@ -272,6 +286,8 @@ export default class extends Phaser.State {
   	if (removed) {
 		this.balls = this.balls.filter(b=>b.dead === false)
 	}
+
+	if (this.dead) return;
 
 	if (EASY_MODE){
 		this.chuckles.leftHand()

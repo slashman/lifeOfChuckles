@@ -15,7 +15,7 @@ export default class extends Phaser.Sprite {
     this.addChild(this.leftThrower)
     this.addChild(this.rightThrower)
 
-  	this.hp = 30
+  	this.hp = 20
   	this.dex = 1
   	this.speed = 1
   	this.int = 0
@@ -57,6 +57,11 @@ export default class extends Phaser.Sprite {
 	  		ball.body.velocity.y = -60
 	  		ball.body.velocity.x = 100
 	  	}
+	  	if (!ball.touched){
+	  		ball.touched = true;
+	  		setTimeout(()=>ball.touched = false, 1000)
+	  		this.context.scoreBall()
+	  	}
   	}
   	this.checkNextBall()
   }
@@ -70,6 +75,11 @@ export default class extends Phaser.Sprite {
 	  	} else {
 	  		ball.body.velocity.y = -200
 	  		ball.body.velocity.x = -40
+	  	}
+	  	if (!ball.touched){
+	  		ball.touched = true;
+	  		setTimeout(()=>ball.touched = false, 1000)
+	  		this.context.scoreBall()
 	  	}
   	}
   	this.checkNextBall()
