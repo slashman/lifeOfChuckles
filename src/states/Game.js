@@ -5,7 +5,7 @@ import Ball from '../sprites/Ball'
 import {dist, getRandomInt} from '../utils'
 import plot from '../plot'
 
-const STORY_DELAY = 10000
+const STORY_DELAY = 5000
 
 export default class extends Phaser.State {
   init () {}
@@ -29,7 +29,15 @@ export default class extends Phaser.State {
   	this.problemOptionB = this.createText(this.world.centerX + 100, this.game.height - 80, "", 30)
   	this.problemTimeText = this.createText(this.world.centerX, this.game.height - 40, "", 40)
   	this.scoreText = this.createText(this.world.centerX - 250, 30, '', 20)
+  	
+  	this.intText = this.createText(this.world.centerX - 250, 60, '', 20)
+  	this.dexText = this.createText(this.world.centerX - 250, 90, '', 20)
+  	
   	this.hpText = this.createText(this.world.centerX + 250, 30, '', 20)
+
+  	this.socText = this.createText(this.world.centerX + 250, 60, '', 20)
+  	this.artText = this.createText(this.world.centerX + 250, 90, '', 20)
+
   	this.storyText = this.createText(this.world.centerX,  90, '', 20)
 
     this.cursors = this.game.input.keyboard.createCursorKeys()
@@ -47,9 +55,6 @@ export default class extends Phaser.State {
     })
     this.persons = []
     
-    this.addPerson(1, this.world.centerX - 120)
-    this.addPerson(0, this.world.centerX + 120)
-
     this.selectedAnswerIcon = this.game.add.sprite(this.world.centerX, this.game.height - 50, 'arrows', 4)
     this.selectedAnswerIcon.anchor.setTo(0.5)
     this.selectedAnswerIcon.visible = false;
@@ -60,15 +65,27 @@ export default class extends Phaser.State {
     this.game.add.existing(this.chuckles)
 
     this.balls = []
+    this.stressLevel = 0;
     this.timeout(()=> this.askForNewBall(), 5000)
     this.timeout(()=> this.spawnStory(plot.START), STORY_DELAY)
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE)
-    this.game.physics.arcade.gravity.y = 400
-    this.hp = 30
+    this.game.physics.arcade.gravity.y = 200
     this.score = 0
-    this.hpText.text = `HP: ${this.hp}`
     this.scoreText.text = `Score: ${this.score}`
+    this.updateStats()
+  }
+
+  updateStats(){
+  	this.intText.text = `INT: ${this.chuckles.int}`
+  	this.dexText.text = `DEX: ${this.chuckles.dex}`
+  	this.hpText.text = `HP: ${this.chuckles.hp}`
+  	this.socText.text = `SOC: ${this.chuckles.soc}`
+  	this.artText.text = `ART: ${this.chuckles.art}`
+  }
+
+  setStressLevel(l) {
+  	this.stressLevel = l
   }
 
   spawnBall(){
@@ -82,10 +99,14 @@ export default class extends Phaser.State {
     this.balls.push(ball)
     this.game.add.existing(ball)
     this.game.physics.arcade.enable(ball)
-    this.timeout(()=> this.askForNewBall(), 10000)
+    this.timeout(()=> this.askForNewBall(), 5000)
   }
 
   askForNewBall(){
+  	if (this.balls.length >= this.stressLevel){
+  		this.timeout(()=> this.askForNewBall(), 5000)
+  		return;
+  	}
   	if (this.balls.length === 0){
   		this.spawnBall()
   	} else {
@@ -143,19 +164,27 @@ export default class extends Phaser.State {
   	const selectedAnswer = this.chuckles.x < this.world.centerX ? 0 : 1;
   	if (this.currentProblem.isChoice){
   		this.problemTimeText.text = "Ok..."
+  		if (selectedAnswer === 0 && this.currentProblem.onA){
+  			this.currentProblem.onA(this)
+  		}
+  		if (selectedAnswer === 1 && this.currentProblem.onB){
+  			this.currentProblem.onB(this)
+  		}
   		this.timeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
 	} else {
 		if (selectedAnswer === this.currentProblem.correct){
 	  		this.score++;
 	  		this.scoreText.text = `Score: ${this.score}`
 	  		this.problemTimeText.text = "Correct!"
+	  		if (this.currentProblem.onCorrect){
+	  			this.currentProblem.onCorrect(this)
+	  		}
 	  	} else {
 	  		this.problemTimeText.text = "Wrong!"
 	  		this.damage(10)
 	  		if (this.dead)
 	  			return;
 	  	}
-	  	this.chuckles.increaseAge();
 	  	this.timeout(()=> this.spawnStory(plot[this.currentProblem.next]), 4000)
 	}
   	this.selectedAnswerIcon.visible = false;
@@ -176,9 +205,9 @@ export default class extends Phaser.State {
   }
 
   damage(damage){
-  	this.hp -= damage
-	this.hpText.text = `HP: ${this.hp}`
-  	if (this.hp <= 0){
+  	this.chuckles.hp -= damage
+  	this.updateStats()
+  	if (this.chuckles.hp <= 0){
   		this.dead = true;
   	}
   }
@@ -228,9 +257,9 @@ export default class extends Phaser.State {
     
   	const cursors = this.cursors;
 	if (cursors.left.isDown) {
-	    this.chuckles.x --;
+	    this.chuckles.x -= this.chuckles.speed
 	} else if (cursors.right.isDown) {
-	    this.chuckles.x ++;
+	    this.chuckles.x += this.chuckles.speed
 	} else if (this.zKey.isDown) {
 		this.chuckles.leftHand()	    
 	} else if (this.xKey.isDown) {

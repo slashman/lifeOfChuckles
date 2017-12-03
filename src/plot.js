@@ -1,10 +1,21 @@
 export default {
 	START: {
 		text: "Chuck was born one day in a happy family",
+		fn: (context) => {
+			context.addPerson(1, context.world.centerX - 120)
+		    context.addPerson(0, context.world.centerX + 120)
+		},
+		next: 'AGE5'
+	},
+	AGE5: {
+		text: "When he was five years old, their parents took him to a preschool",
+		fn: (context) => {
+			context.setStressLevel(1)
+		},
 		next: 'CHOICE'
 	},
 	CHOICE: {
-		text: "Chuck grew up, started juggling things around",
+		text: "Chuck is at the playground",
 		choice: {
 			text: "Select a toy",
 			choices: ["Cube", "Ball"],
@@ -12,19 +23,65 @@ export default {
 		}
 	},
 	MATH: {
-		text: "Chuck became interested on Math",
+		text: "Chuck plays with the Geometric Cube",
 		problem: {
-			text: "2 + 2",
-			answers: [4, 1],
+			text: "Figure it out?",
+			answers: ["Yes", "No"],
 			correct: 0,
+			onCorrect: (context) => {
+				context.chuckles.increaseInt(1)
+			},
+			time: 10
+		},
+		next: 'KINDER'
+	},
+	SPORT: {
+		text: "Chuck tries to kick the ball",
+		problem: {
+			text: "One, two and three!",
+			answers: ["Hit!", "Miss"],
+			correct: 0,
+			onCorrect: (context) => {
+				context.chuckles.increaseDex(1)
+			},
+			time: 10
+		},
+		next: 'KINDER'
+	},
+	KINDER: {
+		text: "Chuck is now at Kindergarten",
+		fn: (context) => {
+			context.chuckles.setAge(1)
+		},
+		choice: {
+			text: "Favorite Class",
+			choices: ["Colors", "Alphabet"],
+			nexts: ["COLORS", "ALPHABET"]
+		}
+	},
+	COLORS: {
+		text: "Chuck is using the pencil colors",
+		problem: {
+			text: "Draw inside the shape",
+			answers: ["Yes", "No"],
+			correct: 0,
+			onCorrect: (context) => {
+				context.chuckles.increaseArt(1)
+			},
 			time: 10
 		},
 		next: 'FRIEND'
 	},
-	SPORT: {
-		text: "Chuck became interested on Sports",
-		fn: (context) => {
-			context.spawnBall()
+	ALPHABET: {
+		text: "Chuck is learning the alphabet",
+		problem: {
+			text: "Draw the vowels",
+			answers: ["ɐɤɘɑI", "aeiou"],
+			correct: 0,
+			onCorrect: (context) => {
+				context.chuckles.increaseInt(1)
+			},
+			time: 10
 		},
 		next: 'FRIEND'
 	},
@@ -33,7 +90,19 @@ export default {
 		fn: (context) => {
 			context.addPerson(2)
 		},
-		next: 'DEATH'
+		next: 'HELP_FRIEND'
+	},
+	HELP_FRIEND: {
+		text: "Paul is being harrased by some schoolmates",
+		choice: {
+			text: "",
+			choices: ["Help Paul", "Run Away"],
+			onA: (context) => {
+				context.chuckles.increaseSoc(1)
+			},
+			nexts: ["DEATH","DEATH"],
+			time: 10
+		}
 	},
 	DEATH: {
 		text: "Then he died."

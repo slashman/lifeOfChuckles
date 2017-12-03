@@ -14,11 +14,19 @@ export default class extends Phaser.Sprite {
     this.rightThrower.anchor.setTo(0.5)
     this.addChild(this.leftThrower)
     this.addChild(this.rightThrower)
+
+  	this.hp = 30
+  	this.dex = 1
+  	this.speed = 1
+  	this.int = 0
+  	this.art = 0
+  	this.soc = 0
+
     this.age = 0
   }
 
-  increaseAge () {
-  	this.age ++;
+  setAge (age) {
+  	this.age = age;
   	let range = AGE_RANGES[this.age]
   	if (!range) {
   		range = AGE_RANGES[AGE_RANGES.length - 1]
@@ -42,11 +50,11 @@ export default class extends Phaser.Sprite {
 	const ball = this.context.getBallAt(this.x - 30, this.y - 20)
   	if (ball) {
   		if (this.leftHanded) {
-	  		ball.body.velocity.y = -400
+	  		ball.body.velocity.y = -200
 	  		ball.body.velocity.x = 40
 	  	} else {
 	  		ball.body.velocity.y = -60
-	  		ball.body.velocity.x = 200
+	  		ball.body.velocity.x = 100
 	  	}
   	}
   	this.checkNextBall()
@@ -57,9 +65,9 @@ export default class extends Phaser.Sprite {
   	if (ball) {
   		if (this.leftHanded) {
 	  		ball.body.velocity.y = -60
-	  		ball.body.velocity.x = -200
+	  		ball.body.velocity.x = -100
 	  	} else {
-	  		ball.body.velocity.y = -400
+	  		ball.body.velocity.y = -200
 	  		ball.body.velocity.x = -40
 	  	}
   	}
@@ -71,6 +79,28 @@ export default class extends Phaser.Sprite {
   		this.shootNewBall = false
   		this.context.spawnBall()
   	}
+  }
+
+  increaseInt(){
+  	this.int++
+  	this.hp += 5
+  	this.context.updateStats()
+  }
+
+  increaseDex(){
+  	this.dex ++
+  	this.speed ++
+  	this.context.updateStats()
+  }
+
+  increaseArt(){
+  	this.art++
+  	this.context.updateStats()
+  }
+
+  increaseSoc(){
+  	this.soc ++
+  	this.context.updateStats()
   }
 }
 
