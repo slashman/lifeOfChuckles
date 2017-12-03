@@ -108,7 +108,7 @@ export default {
 		next: 'FATHERDIED'
 	},
 	FATHERDIED: {
-		text: "Chuck's father passed out last summer.",
+		text: "Chuck's father passed away last summer.",
 		fn: (context) => {
 			context.removePerson(0)
 			context.setStressLevel(2)

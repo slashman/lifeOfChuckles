@@ -144,7 +144,7 @@ export default class extends Phaser.State {
   	this.problemText.text = choice.text
   	this.problemOptionA.text = choice.choices[0]
   	this.problemOptionB.text = choice.choices[1]
-  	this.problemTime = 5
+  	this.problemTime = 10
   	this.selectedAnswerIcon.visible = true;
   	this.countProblemTime()
   }
