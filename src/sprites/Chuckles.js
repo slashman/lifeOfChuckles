@@ -64,7 +64,7 @@ export default class extends Phaser.Sprite {
 	  			this.context.balls = this.context.balls.filter(b=>b.dead === false)
 	  			ball.destroy()
 	  		}
-	  		setTimeout(()=>ball.touched = false, 1000)
+	  		setTimeout(()=>ball.touched = false, 500)
 	  		this.context.scoreBall()
 	  	}
   	}
@@ -88,7 +88,7 @@ export default class extends Phaser.Sprite {
 	  			this.context.balls = this.context.balls.filter(b=>b.dead === false)
 	  			ball.destroy()
 	  		}
-	  		setTimeout(()=>ball.touched = false, 1000)
+	  		setTimeout(()=>ball.touched = false, 500)
 	  		this.context.scoreBall()
 	  	}
   	}

@@ -200,7 +200,7 @@ export default class extends Phaser.State {
   		this.timeout(()=> this.spawnStory(plot[this.currentProblem.nexts[selectedAnswer]]), 4000)
 	} else {
 		if (selectedAnswer === this.currentProblem.correct){
-	  		this.score += 20;
+	  		this.score += 60;
 	  		this.scoreSound()
 	  		this.scoreText.text = `Score: ${this.score}`
 	  		this.problemTimeText.text = "Good!"
