@@ -19,11 +19,8 @@ function selectFromAge(age){
 }
 
 const AGE_RANGES = [
-	{ from: 0, to: 0 },
 	{ from: 0, to: 1 },
-	{ from: 1, to: 1 },
-	{ from: 1, to: 2 },
-	{ from: 2, to: 2 },
-	{ from: 2, to: 2 },
-	{ from: 2, to: 3 }
+	{ from: 2, to: 3 },
+	{ from: 2, to: 3 },
+	{ from: 3, to: 4 }
 ]

@@ -21,6 +21,7 @@ export default class extends Phaser.Sprite {
   	this.int = 0
   	this.art = 0
   	this.soc = 0
+  	this.hap = 3
 
     this.age = 0
   }
@@ -102,6 +103,17 @@ export default class extends Phaser.Sprite {
   	this.soc ++
   	this.context.updateStats()
   }
+
+  increaseHap(){
+  	this.hap ++
+  	this.context.updateStats()
+  }
+
+  reduceHap(){
+  	this.hap --
+  	this.context.updateStats()
+  }
+
 }
 
 

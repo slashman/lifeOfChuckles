@@ -39,6 +39,8 @@ export default class extends Phaser.State {
   	this.socText = this.createText(this.world.centerX + 250, 150, '', 20)
   	this.artText = this.createText(this.world.centerX + 250, 180, '', 20)
 
+  	this.hapText = this.createText(this.world.centerX + 250, 210, '', 20)
+
   	this.storyText = this.createText(this.world.centerX,  90, '', 20)
 
     this.cursors = this.game.input.keyboard.createCursorKeys()
@@ -83,6 +85,7 @@ export default class extends Phaser.State {
   	this.hpText.text = `HP: ${this.chuckles.hp}`
   	this.socText.text = `SOC: ${this.chuckles.soc}`
   	this.artText.text = `ART: ${this.chuckles.art}`
+  	this.hapText.text = `Happy: ${this.chuckles.hap}`
   }
 
   setStressLevel(l) {
@@ -144,7 +147,7 @@ export default class extends Phaser.State {
   	}
   	if (story.problem){
   		this.spawnProblem(story.problem)
-  		this.currentProblem.next = story.next
+  		this.currentProblem.next = next
   	} else if (story.choice) {
   		this.spawnChoice(story.choice)
   	} else if (next){
@@ -183,12 +186,12 @@ export default class extends Phaser.State {
 		if (selectedAnswer === this.currentProblem.correct){
 	  		this.score++;
 	  		this.scoreText.text = `Score: ${this.score}`
-	  		this.problemTimeText.text = "Correct!"
+	  		this.problemTimeText.text = "Good!"
 	  		if (this.currentProblem.onCorrect){
 	  			this.currentProblem.onCorrect(this)
 	  		}
 	  	} else {
-	  		this.problemTimeText.text = "Wrong!"
+	  		this.problemTimeText.text = "Boo!"
 	  		this.damage(10)
 	  		if (this.dead)
 	  			return;

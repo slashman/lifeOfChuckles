@@ -87,6 +87,7 @@ export default {
 		fn: (context) => {
 			context.chuckles.setAge(1)
 			context.addPerson(2)
+			context.chuckles.increaseHap(1)
 			return 'HELP_FRIEND'
 		}
 	},
@@ -111,6 +112,7 @@ export default {
 		fn: (context) => {
 			context.removePerson(0)
 			context.setStressLevel(2)
+			context.chuckles.reduceHap(1)
 			return 'ELEM_SUB'
 		}
 	},
@@ -166,7 +168,7 @@ export default {
 	GAB2: {
 		text: "He fills up with courage and gives her a flower",
 		fn: (context) => {
-			context.chuckles.increaseSoc(1)
+			context.chuckles.increaseHap(1)
 			context.chuckles.gab = true
 			return 'HIGH_SCHOOL'
 		}
@@ -174,7 +176,6 @@ export default {
 	NOGAB: {
 		text: "But he's too coward to talk with her",
 		fn: (context) => {
-			context.chuckles.increaseSoc(1)
 			context.chuckles.gab = false
 			context.removePerson(3)
 			return 'HIGH_SCHOOL'
@@ -208,14 +209,117 @@ export default {
 	WON_EXAMS: {
 		text: "He passes the exams",
 		fn: (context) => {
-			context.chuckles.increaseInt()
+			context.chuckles.setAge(2)
+			context.setStressLevel(3)
+			context.chuckles.increaseHap(1)
+			return "UNI"
 		}
 	},
 	LOST_EXAMS: {
-		text: "He failed the exams"
+		text: "He failed the exams",
+		fn: (context) => {
+			context.chuckles.setAge(2)
+			context.setStressLevel(3)
+			context.chuckles.reduceHap(1)
+			return "HAMB"
+		}
 	},
-
-	DEATH: {
-		text: "Then he died."
+	HAMB: {
+		text: "Chuckles works at an hamburger stand",
+		fn: (context) => {
+			context.chuckles.increaseSoc()
+			if (context.chuckles.gab){
+				return "DUMP_GAB";
+			} else {
+				return "ROX";
+			}
+		},
+		problem: {
+			text: "He tries to flip the burgers",
+			answers: ["Like a pro!", "Faaail"],
+			correct: 0,
+			onCorrect: (context) => {
+				context.chuckles.increaseArt(1)
+			},
+			time: 10
+		},
+	},
+	UNI: {
+		text: "Chuck enters University",
+		choice: {
+			text: "The exams are close",
+			choices: ["Hang out", "Study"],
+			onA: (context) => {
+				context.chuckles.increaseSoc(2)
+			},
+			onB: (context) => {
+				context.chuckles.increaseInt(2)
+			},
+			nexts: ["EXAMS2","EXAMS2"],
+			time: 10
+		}
+	},
+	EXAMS2: {
+		text: "Chuckles does his College Exams",
+		fn: (context) => {
+			if (context.chuckles.gab){
+				return "DUMP_GAB";
+			} else {
+				return "ROX";
+			}
+		}
+	},
+	DUMP_GAB: {
+		text: "Gabrielle abandons Chuckles",
+		fn: (context) => {
+			context.chuckles.gab = false
+			context.removePerson(3)
+			context.chuckles.reduceHap(1)
+			return 'ROX'
+		}
+	},
+	ROX: {
+		text: "Chuckles falls in love with Roxene",
+		fn: (context) => {
+			context.chuckles.setAge(3)
+			context.chuckles.gab = false
+			context.addPerson(4)
+			return 'PROPOSE_ROX'
+		}
+	},
+	PROPOSE_ROX: {
+		text: "",
+		choice: {
+			text: "Propose to Roxene?",
+			choices: ["YES!", "NO WAY!"],
+			nexts: ["MARRY_ROX","DUMP_ROX"],
+			time: 10
+		}
+	},
+	MARRY_ROX: {
+		text: "Chuckles Marries Roxene",
+		fn: (context) => {
+			context.setStressLevel(4)
+			context.chuckles.increaseHap(1)
+			return "CHILD"
+		},
+	},
+	CHILD: {
+		text: "Chuckles has a child, Chuck Jr.",
+		fn: (context) => {
+			context.chuckles.increaseHap(1)
+			return "END"
+		}
+	},
+	DUMP_ROX: {
+		text: "Roxene abandons Chuckles",
+		fn: (context) => {
+			context.removePerson(4)
+			context.chuckles.reduceHap(1)
+			return 'END'
+		}
+	},
+	END: {
+		text: "The End."
 	}
 }
