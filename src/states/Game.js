@@ -6,6 +6,7 @@ import {dist, getRandomInt} from '../utils'
 import plot from '../plot'
 
 const STORY_DELAY = 5000
+const EASY_MODE = true
 
 export default class extends Phaser.State {
   init () {}
@@ -259,6 +260,11 @@ export default class extends Phaser.State {
   	})
   	if (removed) {
 		this.balls = this.balls.filter(b=>b.dead === false)
+	}
+
+	if (EASY_MODE){
+		this.chuckles.leftHand()
+		this.chuckles.rightHand()
 	}
     
   	const cursors = this.cursors;
